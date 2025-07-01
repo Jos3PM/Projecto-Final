@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Emergencia - RegHost</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            margin: 2rem auto;
+            padding: 2rem;
+            max-width: 700px;
+        }
+        .header-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .form-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid #667eea;
+        }
+        .form-floating {
+            margin-bottom: 1.5rem;
+        }
+        .form-control, .form-select {
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+            padding: 1.2rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 1rem 2rem;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+        .btn-secondary-custom {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 1rem 2rem;
+            color: #dc3545;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        .btn-secondary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            color: #dc3545;
+        }
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="form-container">
+        <div class="header-section">
+            <h1><i class="fas fa-edit me-3"></i>Editar Emergencia</h1>
+            <p class="mb-0">Modifique los datos de la emergencia</p>
+        </div>
+
+        <form th:action="@{/emergencias/guardar}" th:object="${emergencia}" method="post">
+            <input type="hidden" th:field="*{id}">
+
+            <div class="form-section">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="nombreCompleto" th:field="*{nombreCompleto}"
+                                   placeholder="Nombre completo del paciente" required>
+                            <label for="nombreCompleto"><i class="fas fa-user me-2"></i>Nombre Completo del Paciente</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select class="form-select" id="doctorAsignado" th:field="*{doctorAsignado}" required>
+                                <option value="">Seleccione un doctor</option>
+                                <option th:each="doctor : ${listaDoctores}" 
+                                        th:value="${doctor.nombre + ' ' + doctor.apellido + ' - ' + doctor.especialidad}"
+                                        th:text="${doctor.nombre + ' ' + doctor.apellido + ' (' + doctor.especialidad + ')'}"
+                                        th:selected="${emergencia.doctorAsignado == doctor.nombre + ' ' + doctor.apellido + ' - ' + doctor.especialidad}">
+                                </option>
+                            </select>
+                            <label for="doctorAsignado"><i class="fas fa-user-md me-2"></i>Doctor Asignado</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="datetime-local" class="form-control" id="fechaHora" th:field="*{fechaHora}" required>
+                            <label for="fechaHora"><i class="fas fa-clock me-2"></i>Fecha y Hora</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-floating">
+                            <select class="form-select" id="estadoSalud" th:field="*{estadoSalud}" required>
+                                <option value="">Seleccione el estado de salud</option>
+                                <option value="Crítico">🔴 Crítico - Requiere atención inmediata</option>
+                                <option value="Grave">🟡 Grave - Situación seria</option>
+                                <option value="Estable">🟢 Estable - Condición controlada</option>
+                                <option value="En Recuperación">🔵 En Recuperación - Mejorando</option>
+                            </select>
+                            <label for="estadoSalud"><i class="fas fa-heartbeat me-2"></i>Estado de Salud</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-floating">
+                            <textarea class="form-control" id="observaciones" th:field="*{observaciones}"
+                                      placeholder="Observaciones adicionales (opcional)"></textarea>
+                            <label for="observaciones"><i class="fas fa-notes-medical me-2"></i>Observaciones (Opcional)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn-custom">
+                    <i class="fas fa-save me-2"></i>Actualizar Emergencia
+                </button>
+                <a th:href="@{/emergencias/}" class="btn-secondary-custom">
+                    <i class="fas fa-arrow-left me-2"></i>Volver a la Lista
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

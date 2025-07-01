@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Doctores - RegHost</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+        .header-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #8b4513;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .btn-custom {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 0.75rem 2rem;
+            color: #8b4513;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            color: #8b4513;
+        }
+        .btn-menu {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 0.75rem 2rem;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-menu:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+        .table th {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #8b4513;
+            border: none;
+            padding: 1rem 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            white-space: nowrap;
+        }
+        .table td {
+            padding: 0.75rem 0.5rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.875rem;
+        }
+        .table tbody tr:hover {
+            background-color: #fef8f5;
+            transform: scale(1.01);
+            transition: all 0.3s ease;
+        }
+        .btn-action {
+            border-radius: 15px;
+            padding: 0.4rem 0.8rem;
+            margin: 0 0.1rem;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        .btn-edit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+        }
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        .btn-delete {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            border: none;
+            color: #dc3545;
+        }
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 154, 158, 0.4);
+            color: #dc3545;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        .badge-custom {
+            font-size: 0.75rem;
+            padding: 0.4rem 0.8rem;
+        }
+        .doctor-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+        .doctor-name {
+            font-weight: 600;
+            color: #495057;
+        }
+        .doctor-detail {
+            font-size: 0.75rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="main-container">
+        <div class="header-section">
+            <h1><i class="fas fa-user-md me-3"></i>Gestión de Doctores</h1>
+            <p class="mb-0">Control del personal médico y especialistas</p>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-dark mb-0">
+                <i class="fas fa-list me-2"></i>Lista de Doctores
+            </h2>
+            <div>
+                <a th:href="@{/doctores/nuevo}" class="btn-custom me-2">
+                    <i class="fas fa-plus me-2"></i>Nuevo Doctor
+                </a>
+                <a th:href="@{/menu}" class="btn-menu">
+                    <i class="fas fa-home me-2"></i>Menú Principal
+                </a>
+            </div>
+        </div>
+
+        <div class="table-container" th:if="${not #lists.isEmpty(listaDoctores)}">
+            <table class="table table-hover mb-0">
+                <thead>
+                <tr>
+                    <th><i class="fas fa-hashtag me-1"></i>ID</th>
+                    <th><i class="fas fa-user-md me-1"></i>Doctor</th>
+                    <th><i class="fas fa-id-card me-1"></i>DNI</th>
+                    <th><i class="fas fa-calendar me-1"></i>Edad</th>
+                    <th><i class="fas fa-stethoscope me-1"></i>Especialidad</th>
+                    <th><i class="fas fa-certificate me-1"></i>Licencia</th>
+                    <th><i class="fas fa-phone me-1"></i>Teléfono</th>
+                    <th><i class="fas fa-envelope me-1"></i>Email</th>
+                    <th><i class="fas fa-graduation-cap me-1"></i>Experiencia</th>
+                    <th><i class="fas fa-cogs me-1"></i>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="doctor : ${listaDoctores}">
+                    <td th:text="${doctor.id}" class="fw-bold"></td>
+                    <td>
+                        <div class="doctor-info">
+                            <span class="doctor-name" th:text="${doctor.nombre + ' ' + doctor.apellido}"></span>
+                            <span class="doctor-detail" th:text="${doctor.estadoCivil}"></span>
+                        </div>
+                    </td>
+                    <td th:text="${doctor.dni}"></td>
+                    <td th:text="${doctor.edad} + ' años'"></td>
+                    <td>
+                        <span class="badge bg-primary badge-custom" th:text="${doctor.especialidad}"></span>
+                    </td>
+                    <td th:text="${doctor.numeroLicencia}"></td>
+                    <td th:text="${doctor.telefono}"></td>
+                    <td th:text="${doctor.email}"></td>
+                    <td th:text="${doctor.anosExperiencia} + ' años'"></td>
+                    <td>
+                        <a th:href="@{'/doctores/editar/' + ${doctor.id}}" class="btn btn-edit btn-action">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a th:href="@{'/doctores/eliminar/' + ${doctor.id}}"
+                           class="btn btn-delete btn-action"
+                           onclick="return confirm('¿Está seguro de eliminar este doctor?')">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="empty-state" th:if="${#lists.isEmpty(listaDoctores)}">
+            <i class="fas fa-user-md"></i>
+            <h3>No hay doctores registrados</h3>
+            <p>Comience agregando el primer doctor al sistema</p>
+            <a th:href="@{/doctores/nuevo}" class="btn-custom mt-3">
+                <i class="fas fa-plus me-2"></i>Agregar Primer Doctor
+            </a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
